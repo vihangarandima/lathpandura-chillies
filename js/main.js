@@ -108,6 +108,20 @@
   });
   hero.addEventListener("pointerleave", () => { tx = 0; ty = 0; });
 
+  /* ---------------- Backdrop video ---------------- */
+  // Plays only while the hero is on screen; the poster still stands in for
+  // reduced motion, data saver, or a browser that refuses to autoplay.
+  const heroVideo = $(".hero__video");
+  const saveData = navigator.connection && navigator.connection.saveData;
+  if (heroVideo && !reduce && !saveData) {
+    heroVideo.muted = true;
+    heroVideo.addEventListener("playing", () => hero.classList.add("has-video"), { once: true });
+    new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) heroVideo.play().catch(() => {});
+      else heroVideo.pause();
+    }, { threshold: 0.05 }).observe(hero);
+  }
+
   /* ---------------- Embers ---------------- */
   const canvas = $(".hero__embers");
   const ctx = canvas.getContext("2d");
